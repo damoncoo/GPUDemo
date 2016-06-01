@@ -8,16 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		C72B45CB1CFE905F00EC5702 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C72B45CA1CFE905F00EC5702 /* ViewController.xib */; };
-		C76A07F91CFE846F003A82FE /* FilterTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C76A07F71CFE846F003A82FE /* FilterTableViewCell.xib */; };
 		C7ADFCF31CFE816100E1CE7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7ADFCF21CFE816100E1CE7E /* Assets.xcassets */; };
 		C7ADFCF61CFE816100E1CE7E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7ADFCF41CFE816100E1CE7E /* LaunchScreen.storyboard */; };
 		C7ADFD011CFE816100E1CE7E /* GPUDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7ADFD001CFE816100E1CE7E /* GPUDemoTests.m */; };
 		C7EC03AB1CFE932700BDC12E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7ADFCEA1CFE816100E1CE7E /* AppDelegate.m */; };
 		C7EC03AC1CFE932700BDC12E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7ADFCED1CFE816100E1CE7E /* ViewController.m */; };
-		C7EC03AD1CFE932700BDC12E /* FilterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C76A07F61CFE846F003A82FE /* FilterTableViewCell.m */; };
-		C7EC03AE1CFE932700BDC12E /* FilterModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C76A07FC1CFE882D003A82FE /* FilterModel.m */; };
 		C7EC03AF1CFE932700BDC12E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7ADFCE71CFE816100E1CE7E /* main.m */; };
 		C7EC03B11CFE933F00BDC12E /* libPods-GPUDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7EC03B01CFE933F00BDC12E /* libPods-GPUDemo.a */; };
+		C7EC03B91CFE946B00BDC12E /* FilterModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EC03B51CFE946B00BDC12E /* FilterModel.m */; };
+		C7EC03BA1CFE946B00BDC12E /* FilterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EC03B71CFE946B00BDC12E /* FilterTableViewCell.m */; };
+		C7EC03BB1CFE946B00BDC12E /* FilterTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7EC03B81CFE946B00BDC12E /* FilterTableViewCell.xib */; };
+		C7EC03BD1CFE963E00BDC12E /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C7EC03BC1CFE963E00BDC12E /* test.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,11 +36,6 @@
 		70E3AE355D71F7441DD4F560 /* Pods-GPUDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GPUDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GPUDemo/Pods-GPUDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		7D715B406A24B4A38041CC6C /* libPods-GPUDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GPUDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C72B45CA1CFE905F00EC5702 /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
-		C76A07F51CFE846F003A82FE /* FilterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterTableViewCell.h; sourceTree = "<group>"; };
-		C76A07F61CFE846F003A82FE /* FilterTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterTableViewCell.m; sourceTree = "<group>"; };
-		C76A07F71CFE846F003A82FE /* FilterTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterTableViewCell.xib; sourceTree = "<group>"; };
-		C76A07FB1CFE882D003A82FE /* FilterModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterModel.h; sourceTree = "<group>"; };
-		C76A07FC1CFE882D003A82FE /* FilterModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterModel.m; sourceTree = "<group>"; };
 		C7ADFCE31CFE816100E1CE7E /* GPUDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GPUDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7ADFCE71CFE816100E1CE7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C7ADFCE91CFE816100E1CE7E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -54,6 +50,12 @@
 		C7ADFD021CFE816100E1CE7E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C7EC03B01CFE933F00BDC12E /* libPods-GPUDemo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-GPUDemo.a"; path = "../../../Library/Developer/Xcode/DerivedData/GPUDemo-evswcrgyylwwzkfkamladayjfcfb/Build/Products/Debug-iphonesimulator/libPods-GPUDemo.a"; sourceTree = "<group>"; };
 		C7EC03B21CFE934400BDC12E /* libGPUImage.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGPUImage.a; path = "../../../Library/Developer/Xcode/DerivedData/GPUDemo-evswcrgyylwwzkfkamladayjfcfb/Build/Products/Debug-iphonesimulator/libGPUImage.a"; sourceTree = "<group>"; };
+		C7EC03B41CFE946B00BDC12E /* FilterModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterModel.h; sourceTree = "<group>"; };
+		C7EC03B51CFE946B00BDC12E /* FilterModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterModel.m; sourceTree = "<group>"; };
+		C7EC03B61CFE946B00BDC12E /* FilterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterTableViewCell.h; sourceTree = "<group>"; };
+		C7EC03B71CFE946B00BDC12E /* FilterTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterTableViewCell.m; sourceTree = "<group>"; };
+		C7EC03B81CFE946B00BDC12E /* FilterTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterTableViewCell.xib; sourceTree = "<group>"; };
+		C7EC03BC1CFE963E00BDC12E /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,16 +109,17 @@
 		C7ADFCE51CFE816100E1CE7E /* GPUDemo */ = {
 			isa = PBXGroup;
 			children = (
+				C7EC03BC1CFE963E00BDC12E /* test.jpg */,
 				C7ADFCE91CFE816100E1CE7E /* AppDelegate.h */,
 				C7ADFCEA1CFE816100E1CE7E /* AppDelegate.m */,
 				C7ADFCEC1CFE816100E1CE7E /* ViewController.h */,
 				C7ADFCED1CFE816100E1CE7E /* ViewController.m */,
 				C72B45CA1CFE905F00EC5702 /* ViewController.xib */,
-				C76A07F51CFE846F003A82FE /* FilterTableViewCell.h */,
-				C76A07F61CFE846F003A82FE /* FilterTableViewCell.m */,
-				C76A07F71CFE846F003A82FE /* FilterTableViewCell.xib */,
-				C76A07FB1CFE882D003A82FE /* FilterModel.h */,
-				C76A07FC1CFE882D003A82FE /* FilterModel.m */,
+				C7EC03B41CFE946B00BDC12E /* FilterModel.h */,
+				C7EC03B51CFE946B00BDC12E /* FilterModel.m */,
+				C7EC03B61CFE946B00BDC12E /* FilterTableViewCell.h */,
+				C7EC03B71CFE946B00BDC12E /* FilterTableViewCell.m */,
+				C7EC03B81CFE946B00BDC12E /* FilterTableViewCell.xib */,
 				C7ADFCF21CFE816100E1CE7E /* Assets.xcassets */,
 				C7ADFCF41CFE816100E1CE7E /* LaunchScreen.storyboard */,
 				C7ADFCF71CFE816100E1CE7E /* Info.plist */,
@@ -236,8 +239,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				C72B45CB1CFE905F00EC5702 /* ViewController.xib in Resources */,
+				C7EC03BD1CFE963E00BDC12E /* test.jpg in Resources */,
+				C7EC03BB1CFE946B00BDC12E /* FilterTableViewCell.xib in Resources */,
 				C7ADFCF61CFE816100E1CE7E /* LaunchScreen.storyboard in Resources */,
-				C76A07F91CFE846F003A82FE /* FilterTableViewCell.xib in Resources */,
 				C7ADFCF31CFE816100E1CE7E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,11 +308,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7EC03BA1CFE946B00BDC12E /* FilterTableViewCell.m in Sources */,
 				C7EC03AB1CFE932700BDC12E /* AppDelegate.m in Sources */,
 				C7EC03AC1CFE932700BDC12E /* ViewController.m in Sources */,
-				C7EC03AD1CFE932700BDC12E /* FilterTableViewCell.m in Sources */,
-				C7EC03AE1CFE932700BDC12E /* FilterModel.m in Sources */,
 				C7EC03AF1CFE932700BDC12E /* main.m in Sources */,
+				C7EC03B91CFE946B00BDC12E /* FilterModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,18 +6,16 @@
 //  Copyright © 2016年 Darcy. All rights reserved.
 //
 
-
 #import <Foundation/Foundation.h>
 #import "GPUImage.h"
-
-typedef struct FilterRange FilterRange;
 
 struct FilterRange {
     float min ;
     float max;
 };
 
-FilterRange  FilterRangeMake(float min ,float max ) {
+typedef struct FilterRange FilterRange;
+CG_INLINE FilterRange  FilterRangeMake(float min ,float max ) {
     
     FilterRange range;
     range.min = min;

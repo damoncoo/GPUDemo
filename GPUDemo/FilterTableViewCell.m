@@ -19,7 +19,13 @@
 }
 
 - (IBAction)sliderValueChaged:(id)sender {
-
+  
+    self.filterModel.progress = self.slider.value;
+    self.progressLabel.text = [NSString stringWithFormat:@"%0.2f",self.filterModel.progress];
+    
+    if (self.block) {
+        self.block();
+    }
 }
 
 @end
