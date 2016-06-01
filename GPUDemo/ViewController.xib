@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ViewController">
+            <connections>
+                <outlet property="filterTableView" destination="Xex-8C-08J" id="DAU-PX-yFA"/>
+                <outlet property="imageView" destination="MhV-h0-ItR" id="SK4-8d-Gtz"/>
+                <outlet property="view" destination="UVc-t0-dvn" id="6g7-1A-mZU"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="UVc-t0-dvn">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MhV-h0-ItR">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="200"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="200" id="8Lt-wm-1LQ"/>
+                    </constraints>
+                </imageView>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Xex-8C-08J">
+                    <rect key="frame" x="0.0" y="202" width="600" height="398"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="2B5-A6-GgV"/>
+                        <outlet property="delegate" destination="-1" id="Q1N-7F-cg7"/>
+                    </connections>
+                </tableView>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="MhV-h0-ItR" firstAttribute="leading" secondItem="UVc-t0-dvn" secondAttribute="leading" id="4cJ-Mc-RUX"/>
+                <constraint firstAttribute="trailing" secondItem="MhV-h0-ItR" secondAttribute="trailing" id="G6Y-as-20l"/>
+                <constraint firstAttribute="trailing" secondItem="Xex-8C-08J" secondAttribute="trailing" id="JVg-NP-kNX"/>
+                <constraint firstAttribute="bottom" secondItem="Xex-8C-08J" secondAttribute="bottom" id="TcR-fr-0bD"/>
+                <constraint firstItem="Xex-8C-08J" firstAttribute="top" secondItem="MhV-h0-ItR" secondAttribute="bottom" constant="2" id="ZUL-uy-1N4"/>
+                <constraint firstItem="Xex-8C-08J" firstAttribute="leading" secondItem="UVc-t0-dvn" secondAttribute="leading" id="dpp-2H-GxD"/>
+                <constraint firstItem="MhV-h0-ItR" firstAttribute="top" secondItem="UVc-t0-dvn" secondAttribute="top" id="mMd-eN-hBY"/>
+            </constraints>
+            <point key="canvasLocation" x="1013" y="381"/>
+        </view>
+    </objects>
+</document>
