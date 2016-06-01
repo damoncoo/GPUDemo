@@ -13,14 +13,12 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.filterRange = FilterRangeMake(0, 1);
     }
     return self;
 }
 
 - (void)setFilterRange:(FilterRange)filterRange {
     _filterRange = filterRange;
-    self.progress = (self.filterRange.max + self.filterRange.min)/2;
 }
 
 @end

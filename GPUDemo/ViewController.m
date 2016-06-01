@@ -25,9 +25,6 @@
 
 @property (strong, nonatomic) NSMutableArray *filtersInPut;
 
-@property (strong, nonatomic) GPUImagePicture *imagePicture;
-
-@property (weak, nonatomic) GPUImageFilter *finalFilter;
 
 @end
 
@@ -101,28 +98,25 @@
             default:
                 break;
         }
+        
+        
+        switch (i) {
+            case 0:
+            case 3:
+            case 4:
+            
+            {
+                filterModel.progress = 0;
+            }
+                break;
+                
+            default: {
+                filterModel.progress = 1;
+            }
+                break;
+        }
+        
     }
-    
-    self.imagePicture = [[GPUImagePicture alloc]initWithImage:self.originImage];
-    
-//    GPUImageFilter *filter;
-//    NSInteger idx = 0;
-//    for (FilterModel *filterModel in self.filters) {
-//        if (idx == 0) {
-//            [self.imagePicture addTarget:filterModel.filter];
-//            filter = filterModel.filter;
-//        }
-//        else {
-//            [filter  addTarget: filterModel.filter];
-//            if (idx == self.filters.count - 1) {
-//                self.finalFilter = filterModel.filter;
-//            }
-//        }
-//        
-//        idx ++;
-//        [self.filtersInPut addObject:filterModel.filter];
-//    }
-//    
     [self.filterTableView registerNib:[UINib nibWithNibName:@"FilterTableViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"Filter"];
     
 }
@@ -158,78 +152,71 @@
 
 - (void)imageForProcess:(void (^)(UIImage *image ))compeletionBlock withIndex:(NSInteger)idx {
     
-    GPUImageFilter *filter  = [self resetFilter:idx];
-    [filter forceProcessingAtSize:self.originImage.size];
-
-//    GPUImagePicture  * staticPictureOne = [[GPUImagePicture alloc] initWithImage:self.processedImage];
-//    [staticPictureOne addTarget:filter];
-//    [staticPictureOne processImage];
-//    [filter useNextFrameForImageCapture];
+    NSLock *lock  = [[NSLock alloc]init];
+    [lock lock];
     
-    [self.imagePicture processImage];
-     self.processedImage = self.imagePicture.imageFromCurrentFramebuffer;
+    UIImage *inputImage = [self.originImage copy];
+    for (int i = 0 ; i < self.filtersInPut.count; i ++) {
+        GPUImagePicture *stillImageSource = [[GPUImagePicture alloc] initWithImage:inputImage];
+        GPUImageFilter *filter = [self resetFilter:i];
+        [stillImageSource addTarget:(GPUImageFilter *)filter];
+        [stillImageSource processImage];
+        [(GPUImageFilter *)filter useNextFrameForImageCapture];
+        inputImage = [(GPUImageFilter *)filter imageFromCurrentFramebuffer];
+    }
     
     if (compeletionBlock) {
-        compeletionBlock(self.processedImage);
+        compeletionBlock(inputImage);
     }
+    
+    [lock unlock];
 }
 
 - (void)procecessImage:(NSInteger)idx {
     
-//    static BOOL hasLoad = NO;
-//    if (hasLoad == NO) {
+    static BOOL hasLoad = NO;
+    if (hasLoad == NO) {
+        [self imageForProcess:^(UIImage *image) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.imageView.image = image;
+            });
+            
+        } withIndex:idx];
+    }
 //
-//        [self imageForProcess:^(UIImage *image) {
-//            
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                self.imageView.image = image;
-//            });
-//            
-//        } withIndex:idx];
+//    if (!self.processQueue) {
+////        dispatch_queue_create(0, DISPATCH_QUEUE_SERIAL);
+//        self.processQueue = dispatch_get_main_queue();
 //    }
     
-    if (!self.processQueue) {
-        self.processQueue = dispatch_queue_create(0, DISPATCH_QUEUE_SERIAL);
-    }
-    __weak typeof(self) weakSelf = self;
-    dispatch_barrier_async(self.processQueue, ^{
-        
-        GPUImagePicture  * staticPictureOne = [[GPUImagePicture alloc] initWithImage:weakSelf.originImage];
-        [staticPictureOne forceProcessingAtSize:self.originImage.size];
-
-        for (FilterModel *filterModel in weakSelf.filters) {
-            [filterModel.filter forceProcessingAtSize:self.originImage.size];
-            [staticPictureOne addTarget:filterModel.filter];
+//    if (!hasLoad) {
+//        hasLoad = YES;
+//    }
+//    else {
+//        return;
+//    }
+//    
+//    __weak typeof(self) weakSelf = self;
+//    self.processedImage = self.originImage;
+//    for (FilterModel *filterModel in weakSelf.filters) {
+//
+//            GPUImageFilter *filter = [self resetFilter:[weakSelf.filters indexOfObject:filterModel]];
+//            [filter forceProcessingAtSize:self.processedImage.size];
+//
+//            GPUImagePicture  * staticPictureOne = [[GPUImagePicture alloc] initWithImage:weakSelf.processedImage];
+//            [filterModel.filter forceProcessingAtSize:self.processedImage.size];
+//            [staticPictureOne addTarget:filter];
+//            [staticPictureOne processImage];
 //            [staticPictureOne useNextFrameForImageCapture];
-            [staticPictureOne processImage];
-            
-            if (filterModel == self.filters.lastObject) {
-                weakSelf.processedImage = filterModel.filter.imageFromCurrentFramebuffer;
-            }
-            [staticPictureOne removeTarget:filterModel.filter];
-
-        }
-        
-    
-//        GPUImageView *view = [[GPUImageView alloc]initWithFrame:CGRectZero];
+//            weakSelf.processedImage = filter.imageFromCurrentFramebuffer;
+//            [staticPictureOne removeTarget:filter];
+//        }
 //        
-//      
-//        GPUImageFilterPipeline  *pipelineOne  = [[GPUImageFilterPipeline alloc]
-//                                                 initWithOrderedFilters:[self allFilters:view]
-//                                                 input:staticPictureOne
-//                                                 output:(GPUImageView *)view];
-//        
-//        [staticPictureOne processImage];
-//        weakSelf.processedImage =  [[pipelineOne currentFilteredFrame] copy];
-//        
-//        [staticPictureOne removeAllTargets];
-//        [pipelineOne removeAllFilters];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-           
-            weakSelf.imageView.image = weakSelf.processedImage;
-        });
-    });
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//           
+//            weakSelf.imageView.image = weakSelf.processedImage;
+//        });
 }
 
 
@@ -246,7 +233,7 @@
     cell.progressLabel.text = [NSString stringWithFormat:@"%0.2f",filterModel.progress];
     cell.minLabel.text = [NSString stringWithFormat:@"%0.2f",filterModel.filterRange.min];
     cell.maxLabel.text = [NSString stringWithFormat:@"%0.2f",filterModel.filterRange.max];
-    cell.filterNameLabel.text = filterModel.filterName;
+    cell.filterNameLabel.text = [filterModel.filterName substringWithRange:NSMakeRange(8, filterModel.filterName.length - 14)];
     cell.block =^(void){
         
         [self procecessImage:indexPath.row];
