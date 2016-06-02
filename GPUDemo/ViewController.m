@@ -8,8 +8,9 @@
 
 #import "ViewController.h"
 #import "FilterTableViewCell.h"
+#import "UIView+Tap.h"
 
-@interface ViewController ()< UITableViewDelegate , UITableViewDataSource >
+@interface ViewController ()< UITableViewDelegate , UITableViewDataSource , UINavigationControllerDelegate, UIImagePickerControllerDelegate >
 
 @property (weak, nonatomic) IBOutlet UITableView *filterTableView;
 
@@ -27,9 +28,29 @@
 
 @property (strong, nonatomic) NSLock *lock;
 
+@property (nonatomic ,strong) GPUImagePicture *stillImagePicture;
+
 @end
 
 @implementation ViewController
+
+#pragma mark - UIImagePicker Controller Delegate 
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(nullable NSDictionary<NSString *,id> *)editingInfo  {
+    
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+    
+    self.originImage = self.processedImage = [image copy];
+    self.imageView.image = [self.processedImage copy];
+    [self reintialStillImagePicture];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+}
+
+#pragma mark -
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -38,26 +59,64 @@
     self.processedImage = [self.originImage copy];
     self.imageView.image = self.originImage;
     
+    [self.imageView handleTap:^(CGPoint loc, UIGestureRecognizer *tapGesture) {
+       
+        UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+        controller.allowsEditing = YES;
+        controller.delegate = self;
+        [controller setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+        [self presentViewController:controller animated:YES completion:^{
+            
+        }];
+        
+    }];
+
+    [self.filterTableView registerNib:[UINib nibWithNibName:@"FilterTableViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"Filter"];
+    
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rightButton.frame = CGRectMake(0, 0, 44, 24);
+    [rightButton addTarget:self action:@selector(didButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    rightButton.backgroundColor = [UIColor purpleColor];
+    [rightButton setTitle:@"生成" forState:UIControlStateNormal];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton];
+    
+    [self reintialStillImagePicture];
+    
+}
+
+- (void)didButtonClicked:(id)sender {
+
+    [self imageForProcess:^(UIImage *image) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.imageView.image = image;
+        });
+        
+    } withIndex:0];
+}
+
+- (void)reintialStillImagePicture {
+    
     NSArray *filters =   [@[
-                              @"GPUImageBrightnessFilter",//0
-                              @"GPUImageContrastFilter",//1
-                              @"GPUImageSaturationFilter",//2
-                              @"GPUImageHighlightShadowFilter",//3
-                              @"GPUImageHighlightShadowFilter",//4
-                              @"GPUImageSharpenFilter",//5
-                              @"GPUImageExposureFilter",//6
-                              @"GPUImageRGBFilter",//7         0 - 1
-                              @"GPUImageRGBFilter",//8
-                              @"GPUImageRGBFilter",//9
-                              @"GPUImageWhiteBalanceFilter",//10白平衡，色温
-                              @"GPUImageVignetteFilter",//晕影 11
-                              @"GPUImageSepiaFilter",//12  默认 1  ， 0 - 4
-                              @"GPUImageLevelsFilter",//13
-                              @"GPUImageGrayscaleFilter",//14
-                              @"GPUImageToneCurveFilter",//15
-                              @"GPUImageAverageLuminanceThresholdFilter",// 16 默认 1.0  0 - 4
-                              @"GPUImageLowPassFilter" // 17  默认 0.5  0 - 1
-                              ] mutableCopy];
+                            @"GPUImageBrightnessFilter",//0
+                            @"GPUImageContrastFilter",//1
+                            @"GPUImageSaturationFilter",//2
+                            @"GPUImageHighlightShadowFilter",//3
+                            @"GPUImageHighlightShadowFilter",//4
+                            @"GPUImageSharpenFilter",//5
+                            @"GPUImageExposureFilter",//6
+                            @"GPUImageRGBFilter",//7         0 - 1
+                            @"GPUImageRGBFilter",//8
+                            @"GPUImageRGBFilter",//9
+                            @"GPUImageWhiteBalanceFilter",//10白平衡，色温
+                            @"GPUImageVignetteFilter",//晕影 11
+                            @"GPUImageSepiaFilter",//12  默认 1  ， 0 - 4
+                            @"GPUImageLevelsFilter",//13
+                            @"GPUImageGrayscaleFilter",//14
+                            @"GPUImageToneCurveFilter",//15
+                            @"GPUImageAverageLuminanceThresholdFilter",// 16 默认 1.0  0 - 4
+                            @"GPUImageLowPassFilter" // 17  默认 0.5  0 - 1
+                            ] mutableCopy];
     
     FilterRange range1 = FilterRangeMake(0,1);
     FilterRange range2 = FilterRangeMake(0,4.0);
@@ -66,9 +125,12 @@
     FilterRange range5 = FilterRangeMake(-1.0,1.0);
     FilterRange range6 = FilterRangeMake(-10.0,10.0);
     FilterRange range7 = FilterRangeMake(1000,10000);
-
+    
     self.filters = [NSMutableArray arrayWithCapacity:0];
     self.filtersInPut = [NSMutableArray arrayWithCapacity:0];
+    self.stillImagePicture = [[GPUImagePicture alloc]initWithImage:self.originImage
+                                               smoothlyScaleOutput:YES];
+    GPUImageFilter *filterTemp ;
     
     for (int i = 0; i < filters.count; i ++) {
         FilterModel *filterModel = [[FilterModel alloc]init];
@@ -79,12 +141,25 @@
         [self.filters addObject:filterModel];
         [self.filtersInPut addObject:filter];
         
+        if (i == 0 ) {
+            filterTemp = filter;
+            [filterTemp useNextFrameForImageCapture];
+        }
+        else {
+            [filter addTarget:filterTemp];
+            [filterTemp useNextFrameForImageCapture];
+            [self.stillImagePicture addTarget:filter];
+        }
+        
         switch (i) {
             case 0:  {
                 filterModel.filterRange = range5;
             }
                 break;
             case 1:
+            case 7:
+            case 8:
+            case 9:
             case 12:
             case 16:  {
                 filterModel.filterRange = range2;
@@ -96,9 +171,6 @@
                 break;
             case 3:
             case 4:
-            case 7:
-            case 8:
-            case 9:
             case 17:  {
                 filterModel.filterRange = range1;
             }
@@ -143,26 +215,8 @@
         }
         
     }
-    [self.filterTableView registerNib:[UINib nibWithNibName:@"FilterTableViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"Filter"];
     
-
-    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    rightButton.frame = CGRectMake(0, 0, 44, 24);
-    [rightButton addTarget:self action:@selector(didButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    rightButton.backgroundColor = [UIColor purpleColor];
-    [rightButton setTitle:@"生成" forState:UIControlStateNormal];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightButton];
-}
-
-- (void)didButtonClicked:(id)sender {
-
-    [self imageForProcess:^(UIImage *image) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.imageView.image = image;
-        });
-        
-    } withIndex:0];
+    [self.filterTableView reloadData];
 }
 
 - (GPUImageFilter *)resetFilter:(NSInteger)i  {
@@ -205,27 +259,27 @@
         [(GPUImageWhiteBalanceFilter *)filter setTemperature:value];
     }
     else if(i == 11 ) {
-        return nil;
+//        return nil;
     }
     else if(i == 12 ) {
         [(GPUImageSepiaFilter *)filter setIntensity:value];
-        return nil;
+//        return nil;
     }
     else if(i == 13 ) {
 //        GPUImageLevelsFilter
-        return nil;
+//        return nil;
     }
     else if(i == 14 ) {
 //        GPUImageGrayscaleFilter
-        return nil;
+//        return nil;
     }
     else if(i == 15 ) {
 //        GPUImageGrayscaleFilter
-        return nil;
+//        return nil;
     }
     else if(i == 16 ) {
         [(GPUImageAverageLuminanceThresholdFilter *)filter setThresholdMultiplier:value];
-        return nil;
+//        return nil;
     }
     else if(i == 17 ) {
         [(GPUImageLowPassFilter *)filter setFilterStrength:value];
@@ -236,38 +290,52 @@
 
 - (void)imageForProcess:(void (^)(UIImage *image ))compeletionBlock withIndex:(NSInteger)idx {
     
-    NSLog(@"11");
-    if (!self.lock) {
-        self.lock = [[NSLock alloc]init];
+    static  BOOL isProcessing = NO;
+    if (isProcessing) {
+        return;
     }
-    [self.lock lock];
+    isProcessing = YES;
     
-    NSLog(@"22");
-
-    UIImage *inputImage = [self.originImage copy];
+    [self.stillImagePicture removeAllTargets];
+//    self.stillImagePicture = nil;
+//    self.stillImagePicture = [[GPUImagePicture alloc]initWithImage:self.originImage
+//                                               smoothlyScaleOutput:YES];
+    GPUImageFilter *filterTemp ;
     for (int i = 0 ; i < self.filtersInPut.count; i ++) {
-        GPUImagePicture *stillImageSource = [[GPUImagePicture alloc] initWithImage:inputImage];
-        GPUImageFilter *filter = [self resetFilter:i];
-        if (!filter) {
-            continue;
+        GPUImageFilter *filter =  [self resetFilter:i];
+        [filter removeAllTargets];
+        if (i == 0 ) {
+            filterTemp = filter;
+            [filter useNextFrameForImageCapture];
         }
-        [stillImageSource addTarget:(GPUImageFilter *)filter];
-        [stillImageSource processImage];
-        [(GPUImageFilter *)filter useNextFrameForImageCapture];
-        inputImage = [(GPUImageFilter *)filter imageFromCurrentFramebuffer];
-        [stillImageSource removeTarget:filter];
-        
-        if (!inputImage) {
-            break;
+        else {
+            [filter addTarget:filterTemp];
+//            [filter useNextFrameForImageCapture];
+            [self.stillImagePicture addTarget:filter];
         }
-    }
-    NSLog(@"33");
-
-    if (compeletionBlock) {
-        compeletionBlock(inputImage);
     }
     
-    [self.lock unlock];
+    [self.stillImagePicture processImageWithCompletionHandler:^{
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            GPUImageFilter *filter = [self.filtersInPut firstObject];
+            [filter useNextFrameForImageCapture];
+            self.processedImage = filter.imageFromCurrentFramebuffer;
+            
+            if (compeletionBlock) {
+                compeletionBlock(self.processedImage);
+            }
+            isProcessing = NO;
+            
+        });
+    
+    }];
+    
+    
+//    [self.stillImagePicture processImage];
+    
+    
+    
 }
 
 - (void)procecessImage:(NSInteger)idx {
@@ -277,44 +345,11 @@
         [self imageForProcess:^(UIImage *image) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.imageView.image = image;
+                self.imageView.image = [image copy];
             });
             
         } withIndex:idx];
     }
-//
-//    if (!self.processQueue) {
-////        dispatch_queue_create(0, DISPATCH_QUEUE_SERIAL);
-//        self.processQueue = dispatch_get_main_queue();
-//    }
-    
-//    if (!hasLoad) {
-//        hasLoad = YES;
-//    }
-//    else {
-//        return;
-//    }
-//    
-//    __weak typeof(self) weakSelf = self;
-//    self.processedImage = self.originImage;
-//    for (FilterModel *filterModel in weakSelf.filters) {
-//
-//            GPUImageFilter *filter = [self resetFilter:[weakSelf.filters indexOfObject:filterModel]];
-//            [filter forceProcessingAtSize:self.processedImage.size];
-//
-//            GPUImagePicture  * staticPictureOne = [[GPUImagePicture alloc] initWithImage:weakSelf.processedImage];
-//            [filterModel.filter forceProcessingAtSize:self.processedImage.size];
-//            [staticPictureOne addTarget:filter];
-//            [staticPictureOne processImage];
-//            [staticPictureOne useNextFrameForImageCapture];
-//            weakSelf.processedImage = filter.imageFromCurrentFramebuffer;
-//            [staticPictureOne removeTarget:filter];
-//        }
-//        
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//           
-//            weakSelf.imageView.image = weakSelf.processedImage;
-//        });
 }
 
 
