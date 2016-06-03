@@ -30,6 +30,8 @@
 
 @property (nonatomic ,strong) GPUImagePicture *stillImagePicture;
 
+@property (nonatomic ,weak) GPUImageFilter *filterTemp ;
+
 @end
 
 @implementation ViewController
@@ -130,8 +132,6 @@
     self.filtersInPut = [NSMutableArray arrayWithCapacity:0];
     self.stillImagePicture = [[GPUImagePicture alloc]initWithImage:self.originImage
                                                smoothlyScaleOutput:YES];
-    GPUImageFilter *filterTemp ;
-    
     for (int i = 0; i < filters.count; i ++) {
         FilterModel *filterModel = [[FilterModel alloc]init];
         filterModel.filterName = [filters objectAtIndex:i];
@@ -140,16 +140,6 @@
         filterModel.filter = filter;
         [self.filters addObject:filterModel];
         [self.filtersInPut addObject:filter];
-        
-        if (i == 0 ) {
-            filterTemp = filter;
-            [filterTemp useNextFrameForImageCapture];
-        }
-        else {
-            [filter addTarget:filterTemp];
-            [filterTemp useNextFrameForImageCapture];
-            [self.stillImagePicture addTarget:filter];
-        }
         
         switch (i) {
             case 0:  {
@@ -213,9 +203,7 @@
             }
                 break;
         }
-        
     }
-    
     [self.filterTableView reloadData];
 }
 
@@ -290,33 +278,44 @@
 
 - (void)imageForProcess:(void (^)(UIImage *image ))compeletionBlock withIndex:(NSInteger)idx {
     
+    static NSInteger time = 0;
+    time ++;
+    NSLog(@"第%zi次执行",time);
+    
     static  BOOL isProcessing = NO;
     if (isProcessing) {
         return;
     }
     isProcessing = YES;
     
+    static NSInteger timeExcuting = 0;
+    timeExcuting ++;
+    NSLog(@"第%zi次执行",timeExcuting);
+
+    
     [self.stillImagePicture removeAllTargets];
-    GPUImageFilter *filterTemp ;
     for (int i = 0 ; i < self.filtersInPut.count; i ++) {
         GPUImageFilter *filter =  [self resetFilter:i];
         [filter removeAllTargets];
+        
         if (i == 0 ) {
-            filterTemp = filter;
-            [self.stillImagePicture addTarget:filterTemp];
-            [filterTemp useNextFrameForImageCapture];
+            self.filterTemp = filter;
+            [self.stillImagePicture addTarget:filter];
+            [filter useNextFrameForImageCapture];
         }
         else {
-            [filterTemp addTarget:filter];
+            if (i == 12  || i == 14 ||  i == 16 || i == 17 || i == 11) {
+                continue;
+            }
+            [self.filterTemp addTarget:filter];
             [filter useNextFrameForImageCapture];
-            filterTemp = filter;
+            self.filterTemp = filter;
         }
     }
     
     [self.stillImagePicture processImageWithCompletionHandler:^{
-        
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.processedImage = filterTemp.imageFromCurrentFramebuffer;
+            self.processedImage = self.filterTemp.imageFromCurrentFramebuffer;
             if (compeletionBlock) {
                 compeletionBlock(self.processedImage);
             }
@@ -354,10 +353,10 @@
     cell.minLabel.text = [NSString stringWithFormat:@"%0.2f",filterModel.filterRange.min];
     cell.maxLabel.text = [NSString stringWithFormat:@"%0.2f",filterModel.filterRange.max];
     cell.filterNameLabel.text = [filterModel.filterName substringWithRange:NSMakeRange(8, filterModel.filterName.length - 14)];
-//    cell.block =^(void){
-//        
-//        [self procecessImage:indexPath.row];
-//    };
+    cell.block =^(void){
+        
+        [self procecessImage:indexPath.row];
+    };
     
     return cell;
 }
