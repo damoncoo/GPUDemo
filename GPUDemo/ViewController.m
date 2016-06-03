@@ -297,45 +297,32 @@
     isProcessing = YES;
     
     [self.stillImagePicture removeAllTargets];
-//    self.stillImagePicture = nil;
-//    self.stillImagePicture = [[GPUImagePicture alloc]initWithImage:self.originImage
-//                                               smoothlyScaleOutput:YES];
     GPUImageFilter *filterTemp ;
     for (int i = 0 ; i < self.filtersInPut.count; i ++) {
         GPUImageFilter *filter =  [self resetFilter:i];
         [filter removeAllTargets];
         if (i == 0 ) {
             filterTemp = filter;
-            [filter useNextFrameForImageCapture];
+            [self.stillImagePicture addTarget:filterTemp];
+            [filterTemp useNextFrameForImageCapture];
         }
         else {
-            [filter addTarget:filterTemp];
-//            [filter useNextFrameForImageCapture];
-            [self.stillImagePicture addTarget:filter];
+            [filterTemp addTarget:filter];
+            [filter useNextFrameForImageCapture];
+            filterTemp = filter;
         }
     }
     
     [self.stillImagePicture processImageWithCompletionHandler:^{
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            GPUImageFilter *filter = [self.filtersInPut firstObject];
-            [filter useNextFrameForImageCapture];
-            self.processedImage = filter.imageFromCurrentFramebuffer;
-            
+            self.processedImage = filterTemp.imageFromCurrentFramebuffer;
             if (compeletionBlock) {
                 compeletionBlock(self.processedImage);
             }
             isProcessing = NO;
-            
         });
-    
     }];
-    
-    
-//    [self.stillImagePicture processImage];
-    
-    
-    
 }
 
 - (void)procecessImage:(NSInteger)idx {
