@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "FilterTableViewCell.h"
 #import "UIView+Tap.h"
+#import "GPUDemo-Swift.h"
 
 @interface ViewController ()< UITableViewDelegate , UITableViewDataSource , UINavigationControllerDelegate, UIImagePickerControllerDelegate >
 
@@ -95,6 +96,9 @@
         });
         
     } withIndex:0];
+    
+    WebViewController *web = [[WebViewController alloc]init];
+    [self presentViewController:web animated:YES completion:NULL];
 }
 
 - (void)reintialStillImagePicture {
